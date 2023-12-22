@@ -1,13 +1,26 @@
 import { useForm } from "react-hook-form";
 import Tasksleft from "./Tasksleft";
-
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Tasks = () => {
+
+    const axiosSecure = useAxiosSecure()
 
     const { register, handleSubmit } = useForm();
     const onSubmit = (data) =>{
         
         console.log(data)
+        axiosSecure.post("/tasks", data)
+        .then(res =>{
+            if(res.data.insertedId){
+                toast.success("task added!",{
+                    position:"top-right",
+                    autoClose:2000,
+                })
+            }
+        })
 
            
     }
@@ -73,7 +86,7 @@ const Tasks = () => {
                     {/* status  */}
                                  
 
-                     <select defaultValue="default"  {...register("status ")} className="select select-bordered w-full    mb-4">
+                     <select defaultValue="default"  {...register("status")} className="select select-bordered w-full    mb-4">
                     <option value="default" >Select Status</option>
                     <option value="todo" >To do</option>
                     <option value="Moderate" >ongoing</option>
@@ -99,7 +112,7 @@ const Tasks = () => {
                     type="submit"
                     className="block w-full rounded-lg  px-5 py-3 text-sm font-medium text-black bg-[#3ea5fe] hover:shadow-lg hover:text-white"
                 >
-                    Save
+                    Add task
                 </button>
 
 
@@ -123,6 +136,8 @@ const Tasks = () => {
             <Tasksleft></Tasksleft>
 
             </div>
+
+            <ToastContainer></ToastContainer>
           
         </div>
     );
