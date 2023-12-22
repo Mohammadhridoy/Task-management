@@ -3,22 +3,37 @@ import Tasksleft from "./Tasksleft";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useContext } from "react";
+import { AuthContext } from "../AuthProvider/AuthProvider";
+import TasksMiddle from "./TasksMiddle";
 
 const Tasks = () => {
-
+    const {user} = useContext(AuthContext)
     const axiosSecure = useAxiosSecure()
 
-    const { register, handleSubmit } = useForm();
+    const { register, reset,  handleSubmit } = useForm();
     const onSubmit = (data) =>{
         
         console.log(data)
-        axiosSecure.post("/tasks", data)
+        console.log(data.priority)
+        const tasksData = {
+            title: data.title,
+            description: data.description,
+            deadlines: data.deadlines, 
+            priority: data.priority,
+            status: data.status,
+            email: user.email
+
+        }
+        axiosSecure.post("/tasks", tasksData )
         .then(res =>{
             if(res.data.insertedId){
                 toast.success("task added!",{
                     position:"top-right",
                     autoClose:2000,
                 })
+                reset()
+                
             }
         })
 
@@ -65,7 +80,7 @@ const Tasks = () => {
 
                      {/* priority */}
 
-                    <select defaultValue="default"  {...register("priority ")} className="select select-bordered w-full    mb-4">
+                    <select defaultValue="default"  {...register("priority")} className="select select-bordered w-full    mb-4">
                     <option value="default" >Select  priority </option>
                     <option value="Low" >Low</option>
                     <option value="Moderate" >Moderate</option>
@@ -89,8 +104,8 @@ const Tasks = () => {
                      <select defaultValue="default"  {...register("status")} className="select select-bordered w-full    mb-4">
                     <option value="default" >Select Status</option>
                     <option value="todo" >To do</option>
-                    <option value="Moderate" >ongoing</option>
-                    <option value="high">completed</option>
+                    <option value="ongoing" >ongoing</option>
+                    <option value="completed">completed</option>
                     </select>
 
                         
@@ -132,8 +147,9 @@ const Tasks = () => {
 
 
             {/* bottom section */}
-            <div className="py-6 px-6 grid md:grid-cols-2 lg:grid-cols-3">
+            <div className="py-6 px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Tasksleft></Tasksleft>
+            <TasksMiddle></TasksMiddle>
 
             </div>
 
